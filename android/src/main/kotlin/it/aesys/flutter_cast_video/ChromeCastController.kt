@@ -24,6 +24,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
+import androidx.appcompat.R
 
 
 class ChromeCastController(
@@ -32,7 +33,8 @@ class ChromeCastController(
         context: Context?
 ) : PlatformView, MethodChannel.MethodCallHandler, SessionManagerListener<Session>, PendingResult.StatusListener {
     private val channel = MethodChannel(messenger, "flutter_cast_video/chromeCast_$viewId")
-    private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
+    // Use a direct reference to the AppCompat theme resource instead of R.style
+    private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, androidx.appcompat.R.style.Theme_AppCompat_NoActionBar))
     private val sessionManager = CastContext.getSharedInstance()?.sessionManager
 
     init {
@@ -81,36 +83,6 @@ class ChromeCastController(
         request?.addStatusListener(this)
     }
 
-    /*private fun mediaQueue(args: Any?) : List<HashMap<String,String>>{
-       val items : List<HashMap<String,String>> = mutableListOf()
-        val client = sessionManager?.currentCastSession?.remoteMediaClient ?: return items
-       val queue = client.getMediaQueue()
-       val status = client.mediaStatus
-       val qlen = queue.getItemCount()
-
-       var start = 0
-       var batch = 5
-       var page = 1;
-       if (args is Map<*, *>) {
-           batch = (args["batch"] as? Int) ?: batch
-           page = (args["page"] as? Int) ?: page
-       }
-        start = page * batch
-        var end = (page+1) * batch
-        if (start >= qlen){
-            return items
-        }
-        if (end > qlen){
-            end = qlen
-        }
-        batch = end - start
-
-        var ret = queue.fetchMoreItemsRelativeToIndex(start, batch, 0)
-        ret.setResultCallback {
-
-        }
-    }
-     */
     private fun seek(args: Any?) {
         if (args is Map<*, *>) {
             val relative = (args["relative"] as? Boolean) ?: false
@@ -207,7 +179,9 @@ class ChromeCastController(
     override fun getView() = chromeCastButton
 
     override fun dispose() {
-
+        // Clean up resources
+        removeSessionListener()
+        channel.setMethodCallHandler(null)
     }
 
     // Flutter methods handling
