@@ -1,10 +1,12 @@
 package it.aesys.flutter_cast_video
 
-import androidx.annotation.NonNull;
+import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.PluginRegistry.Registrar
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugin.platform.PlatformViewRegistry
 
 /** FlutterVideoCastPlugin */
 public class FlutterVideoCastPlugin: FlutterPlugin, ActivityAware {
@@ -31,18 +33,22 @@ public class FlutterVideoCastPlugin: FlutterPlugin, ActivityAware {
   // in the same class.
   companion object {
     @JvmStatic
-    fun registerWith(registrar: Registrar) {
+    fun registerWith(registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
+      // Use the new API internally to maintain compatibility with old Flutter versions
+      val plugin = FlutterVideoCastPlugin()
+      val factory = ChromeCastFactory(registrar.messenger())
+      factory.activity = registrar.activity()
       registrar
               .platformViewRegistry()
               .registerViewFactory(
                       "ChromeCastButton",
-                      ChromeCastFactory(registrar.messenger())
+                      factory
               )
     }
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    
+    // Clean up resources if needed
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -50,14 +56,18 @@ public class FlutterVideoCastPlugin: FlutterPlugin, ActivityAware {
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-
+    // The Activity is about to be recreated due to a config change.
+    // This is called right before onDetachedFromActivity.
   }
 
   override fun onDetachedFromActivity() {
-
+    // Clean up resources related to the Activity if needed
+    chromeCastFactory.activity = null
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-
+    // The Activity was recreated due to a config change.
+    // This is called after onAttachedToActivity.
+    chromeCastFactory.activity = binding.activity
   }
 }
