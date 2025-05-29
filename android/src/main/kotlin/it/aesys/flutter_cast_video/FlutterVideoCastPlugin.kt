@@ -31,21 +31,21 @@ public class FlutterVideoCastPlugin: FlutterPlugin, ActivityAware {
   // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
-  companion object {
-    @JvmStatic
-    fun registerWith(registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
-      // Use the new API internally to maintain compatibility with old Flutter versions
-      val plugin = FlutterVideoCastPlugin()
-      val factory = ChromeCastFactory(registrar.messenger())
-      factory.activity = registrar.activity()
-      registrar
-              .platformViewRegistry()
-              .registerViewFactory(
-                      "ChromeCastButton",
-                      factory
-              )
-    }
-  }
+  // companion object {
+  //   @JvmStatic
+  //   fun registerWith(registrar: io.flutter.plugin.common.PluginRegistry.Registrar) {
+  //     // Use the new API internally to maintain compatibility with old Flutter versions
+  //     val plugin = FlutterVideoCastPlugin()
+  //     val factory = ChromeCastFactory(registrar.messenger())
+  //     factory.activity = registrar.activity()
+  //     registrar
+  //             .platformViewRegistry()
+  //             .registerViewFactory(
+  //                     "ChromeCastButton",
+  //                     factory
+  //             )
+  //   }
+  // }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     // Clean up resources if needed
